@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+      "target": "es2015",
+      "allowJs": true,
+      "declaration": false,
+      // "strict": true,
+      "outDir": "dist",
+      "lib": ["es6", "dom", "dom.iterable", "esnext"],
+      "allowSyntheticDefaultImports": true,
+      "module": "esnext",
+      "moduleResolution": "node",    
+      "sourceMap": false,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "baseUrl": "src",
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "noFallthroughCasesInSwitch": true,
+      "noImplicitReturns": true
+    },
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Recommended",
+    "include": ["src"],
+    "exclude": ["node_modules"]
+  }
