@@ -4,3 +4,9 @@ export interface BatchPayment {
     number: number;
     receivers: string[];
 }
+
+export interface ClaimPayment {
+    sender: string;
+    source: string;
+    escrow: string;
+}

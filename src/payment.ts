@@ -91,18 +91,19 @@ export class Payment {
         }
     }
 
-    async claim(data: any): Promise<any> {
+    async claim(data: TYPES.ClaimPayment): Promise<any> {
         const { sender, source, escrow } = data;
 
         const senderAddress = new PublicKey(sender);
+        const escrowAddress = new PublicKey(escrow)
         const paymentSourceAddress = new PublicKey(source)
 
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
 
         const ix = await INSTRUCTIONS.claimPayment (
             paymentSourceAddress,
-            sender,
-            escrow,
+            senderAddress,
+            escrowAddress,
             paymentVaultAddress,
             this._programId
         )
