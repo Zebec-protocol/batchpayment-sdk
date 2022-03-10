@@ -1,6 +1,6 @@
 import { AccountMeta, Keypair, PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
 import { serialize } from "borsh";
-import * as SCHEMA from "./schema"
+import { InitBatchPaymentSchema,  InitBatchPayment, ClaimPaymentSchema, ClaimPayment } from "./schema"
 
 export const initBatchPayment = async (
     sender: PublicKey,
@@ -36,7 +36,7 @@ export const initBatchPayment = async (
         keys,
         programId,
         data: Buffer.from(
-            serialize(SCHEMA.InitBatchPaymentSchema, new SCHEMA.InitBatchPayment(ixData))
+            serialize(InitBatchPaymentSchema, new InitBatchPayment(ixData))
         )
     })
 }
@@ -65,7 +65,7 @@ export const claimPayment = async (
         keys,
         programId,
         data: Buffer.from(
-            serialize(SCHEMA.ClaimPaymentSchema, new SCHEMA.ClaimPayment({...ixData}))
+            serialize(ClaimPaymentSchema, new ClaimPayment({...ixData}))
         )
     })
 }

@@ -1,7 +1,7 @@
 import { Commitment, Connection, ConnectionConfig, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { BATCH_PAYMENT_PROGRAM_ID, PREFIX } from "./constants";
-import * as TYPES from './types';
-import * as INSTRUCTIONS from './instructions';
+import { BatchPayment, ClaimPayment} from './types';
+import { initBatchPayment, claimPayment } from './instructions';
 
 
 export class Payment {
@@ -38,7 +38,7 @@ export class Payment {
     }
 
     // Remove Number: is it Number of Receivers?
-    async init(data: TYPES.BatchPayment): Promise<any> {
+    async init(data: BatchPayment): Promise<any> {
         const {sender, receivers, number, amounts} = data;
         const senderAddress = new PublicKey(sender);
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
@@ -53,7 +53,7 @@ export class Payment {
             }
         })
 
-        const ix = await INSTRUCTIONS.initBatchPayment(
+        const ix = await initBatchPayment(
             senderAddress,
             paymentVaultAddress,
             escrow,
@@ -91,7 +91,7 @@ export class Payment {
         }
     }
 
-    async claim(data: TYPES.ClaimPayment): Promise<any> {
+    async claim(data: ClaimPayment): Promise<any> {
         const { sender, source, escrow } = data;
 
         const senderAddress = new PublicKey(sender);
@@ -100,7 +100,7 @@ export class Payment {
 
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
 
-        const ix = await INSTRUCTIONS.claimPayment (
+        const ix = await claimPayment (
             paymentSourceAddress,
             senderAddress,
             escrowAddress,
