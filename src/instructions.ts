@@ -36,7 +36,7 @@ export const initBatchPayment = async (
         keys,
         programId,
         data: Buffer.from(
-            serialize(InitBatchPaymentSchema, new InitBatchPayment(ixData))
+            serialize(InitBatchPaymentSchema, new InitBatchPayment({...ixData}))
         )
     })
 }
