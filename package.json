@@ -2,7 +2,7 @@
   "name": "batch-payment",
   "version": "1.0.0",
   "description": "Batch Payment - Zebec Protocol",
-  "types": "lib/index.d.ts",
+  "types": "dist/index.d.ts",
   "keywords": [
     "zebec",
     "stream",
@@ -12,9 +12,9 @@
   "bugs": {
     "url": "https://github.com/Zebec-protocol/batch-payment-sdk"
   },
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "files": [
-    "/lib/*.*",
+    "/dist/*.*",
     "/src"
   ],
   "scripts": {

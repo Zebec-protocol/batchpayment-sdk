@@ -23,5 +23,3 @@ doc
 
 # VIM swap files
 *.sw*
-
-dist/
