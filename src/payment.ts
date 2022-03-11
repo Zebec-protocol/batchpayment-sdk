@@ -37,9 +37,8 @@ export class Payment {
         }
     }
 
-    // Remove Number: is it Number of Receivers?
     async init(data: BatchPayment): Promise<any> {
-        const {sender, receivers, number, amounts} = data;
+        const {sender, receivers, amounts} = data;
         const senderAddress = new PublicKey(sender);
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
 
@@ -59,7 +58,6 @@ export class Payment {
             escrow,
             receiverKeys,
             amounts,
-            number,
             this._programId
         )
 

@@ -8,7 +8,6 @@ export const initBatchPayment = async (
     escrow: Keypair,
     receiverKeys: AccountMeta[],
     amounts: number[],
-    numberOfKeys: number,
     programId: PublicKey,
 
 ): Promise<TransactionInstruction> => {
@@ -29,7 +28,6 @@ export const initBatchPayment = async (
 
     const ixData = {
         instruction: 0,
-        number: numberOfKeys,
         amount: amounts
     }
     return new TransactionInstruction({
