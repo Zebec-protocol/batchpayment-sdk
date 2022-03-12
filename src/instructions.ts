@@ -1,6 +1,6 @@
 import { AccountMeta, Keypair, PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
 import { serialize } from "borsh";
-import { InitBatchPaymentSchema,  InitBatchPayment, ClaimPaymentSchema, ClaimPayment } from "./schema"
+import { InitBatchPaymentSchema,  InitBatchPayment, ClaimPaymentSchema, ClaimPayment, Amount } from "./schema"
 
 export const initBatchPayment = async (
     sender: PublicKey,
@@ -22,14 +22,20 @@ export const initBatchPayment = async (
         { pubkey: new PublicKey(sender), isSigner: true, isWritable: true },
         { pubkey: new PublicKey(SystemProgram.programId), isSigner: false, isWritable: false },
         { pubkey: new PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
-        { pubkey: escrow, isSigner: true, isWritable: true },
+        { pubkey: escrow.publicKey, isSigner: true, isWritable: true },
         ...otherKeys
     ]
 
+    const amountKeys = []
+    amounts.map(a => {
+        amountKeys.push(new Amount({amount: a}))
+    })
+
     const ixData = {
         instruction: 0,
-        amount: amounts
+        amount: amountKeys
     }
+    
     return new TransactionInstruction({
         keys,
         programId,

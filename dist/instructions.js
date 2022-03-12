@@ -60,8 +60,8 @@ exports.claimPayment = exports.initBatchPayment = void 0;
 var web3_js_1 = require("@solana/web3.js");
 var borsh_1 = require("borsh");
 var schema_1 = require("./schema");
-var initBatchPayment = function (sender, paymentVaultAddress, escrow, receiverKeys, amounts, numberOfKeys, programId) { return __awaiter(void 0, void 0, void 0, function () {
-    var otherKeys, keys, ixData;
+var initBatchPayment = function (sender, paymentVaultAddress, escrow, receiverKeys, amounts, programId) { return __awaiter(void 0, void 0, void 0, function () {
+    var otherKeys, keys, amountKeys, ixData;
     return __generator(this, function (_a) {
         otherKeys = [];
         receiverKeys.map(function (rk) {
@@ -71,17 +71,20 @@ var initBatchPayment = function (sender, paymentVaultAddress, escrow, receiverKe
             { pubkey: new web3_js_1.PublicKey(sender), isSigner: true, isWritable: true },
             { pubkey: new web3_js_1.PublicKey(web3_js_1.SystemProgram.programId), isSigner: false, isWritable: false },
             { pubkey: new web3_js_1.PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
-            { pubkey: escrow, isSigner: true, isWritable: true }
+            { pubkey: escrow.publicKey, isSigner: true, isWritable: true }
         ], otherKeys, true);
+        amountKeys = [];
+        amounts.map(function (a) {
+            amountKeys.push(new schema_1.Amount({ amount: a }));
+        });
         ixData = {
             instruction: 0,
-            number: numberOfKeys,
-            amount: amounts
+            amount: amountKeys
         };
         return [2 /*return*/, new web3_js_1.TransactionInstruction({
                 keys: keys,
                 programId: programId,
-                data: Buffer.from((0, borsh_1.serialize)(schema_1.InitBatchPaymentSchema, new schema_1.InitBatchPayment(ixData)))
+                data: Buffer.from((0, borsh_1.serialize)(schema_1.InitBatchPaymentSchema, new schema_1.InitBatchPayment(__assign({}, ixData))))
             })];
     });
 }); };

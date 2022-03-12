@@ -90,18 +90,19 @@ var Payment = /** @class */ (function () {
             });
         });
     };
-    // Remove Number: is it Number of Receivers?
     Payment.prototype.init = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var sender, receivers, number, amounts, senderAddress, _a, paymentVaultAddress, _, escrow, receiverKeys, ix, tx, recentHash, res, e_1;
+            var sender, receivers, amounts, senderAddress, _a, paymentVaultAddress, _, escrow, receiverKeys, ix, tx, recentHash, res, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        sender = data.sender, receivers = data.receivers, number = data.number, amounts = data.amounts;
+                        sender = data.sender, receivers = data.receivers, amounts = data.amounts;
+                        console.log("init batch payment data: ", data);
                         senderAddress = new web3_js_1.PublicKey(sender);
                         return [4 /*yield*/, this._findPaymentVaultAddress(senderAddress)];
                     case 1:
                         _a = _b.sent(), paymentVaultAddress = _a[0], _ = _a[1];
+                        console.log("vault Address", paymentVaultAddress.toBase58());
                         escrow = new web3_js_1.Keypair();
                         receiverKeys = receivers.map(function (receiver) {
                             return {
@@ -110,10 +111,12 @@ var Payment = /** @class */ (function () {
                                 isWritable: true
                             };
                         });
-                        return [4 /*yield*/, (0, instructions_1.initBatchPayment)(senderAddress, paymentVaultAddress, escrow, receiverKeys, amounts, number, this._programId)];
+                        console.log("receiver keys mapping: ", receiverKeys);
+                        return [4 /*yield*/, (0, instructions_1.initBatchPayment)(senderAddress, paymentVaultAddress, escrow, receiverKeys, amounts, this._programId)];
                     case 2:
                         ix = _b.sent();
-                        tx = new web3_js_1.Transaction().add(__assign({}, ix));
+                        console.log("transaction ix: ", ix);
+                        tx = new web3_js_1.Transaction().add(ix);
                         return [4 /*yield*/, this._connection.getRecentBlockhash()];
                     case 3:
                         recentHash = _b.sent();
@@ -121,11 +124,13 @@ var Payment = /** @class */ (function () {
                     case 4:
                         _b.trys.push([4, 6, , 7]);
                         tx.recentBlockhash = recentHash.blockhash;
-                        tx.feePayer = new web3_js_1.PublicKey(sender);
+                        tx.feePayer = this.walletProvider.publicKey;
                         tx.partialSign(escrow);
+                        console.log("transaction ix after adding properties: ", tx);
                         return [4 /*yield*/, this._signAndConfirm(tx)];
                     case 5:
                         res = _b.sent();
+                        console.log("response from sign and confirm: ", res);
                         return [2 /*return*/, {
                                 status: "success",
                                 message: "transaction success",

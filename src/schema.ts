@@ -20,7 +20,6 @@ export const InitBatchPaymentSchema = new Map([
             kind: "struct",
             fields: [
                 ["instruction", "u8"],
-                // ["number", "u64"],
                 ["amount", [Amount]]
             ]
         }

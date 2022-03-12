@@ -39,8 +39,11 @@ export class Payment {
 
     async init(data: BatchPayment): Promise<any> {
         const {sender, receivers, amounts} = data;
+        console.log("init batch payment data: ", data);
         const senderAddress = new PublicKey(sender);
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
+
+        console.log("vault Address", paymentVaultAddress.toBase58())
 
         const escrow = new Keypair();
 
@@ -52,6 +55,8 @@ export class Payment {
             }
         })
 
+        console.log("receiver keys mapping: ", receiverKeys)
+
         const ix = await initBatchPayment(
             senderAddress,
             paymentVaultAddress,
@@ -61,16 +66,23 @@ export class Payment {
             this._programId
         )
 
-        let tx = new Transaction().add({...ix});
+        console.log("transaction ix: ", ix);
 
+        let tx = new Transaction().add(ix);
+
+        
         const recentHash = await this._connection.getRecentBlockhash();
-
+        
         try {
             tx.recentBlockhash = recentHash.blockhash;
-            tx.feePayer = new PublicKey(sender);
+            tx.feePayer = this.walletProvider.publicKey;
             tx.partialSign(escrow);
+            
+            console.log("transaction ix after adding properties: ", tx);
     
             const res = await this._signAndConfirm(tx);
+
+            console.log("response from sign and confirm: ", res);
     
             return {
                 status: "success",
@@ -91,6 +103,8 @@ export class Payment {
 
     async claim(data: ClaimPayment): Promise<any> {
         const { sender, source, escrow } = data;
+
+        console.log("data to claim payment: ", data);
 
         const senderAddress = new PublicKey(sender);
         const escrowAddress = new PublicKey(escrow)
