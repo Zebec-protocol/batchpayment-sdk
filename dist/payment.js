@@ -155,15 +155,18 @@ var Payment = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         sender = data.sender, source = data.source, escrow = data.escrow;
+                        console.log("data to claim payment: ", data);
                         senderAddress = new web3_js_1.PublicKey(sender);
                         escrowAddress = new web3_js_1.PublicKey(escrow);
                         paymentSourceAddress = new web3_js_1.PublicKey(source);
                         return [4 /*yield*/, this._findPaymentVaultAddress(senderAddress)];
                     case 1:
                         _a = _b.sent(), paymentVaultAddress = _a[0], _ = _a[1];
+                        console.log("payment vault address: ", paymentVaultAddress.toBase58());
                         return [4 /*yield*/, (0, instructions_1.claimPayment)(paymentSourceAddress, senderAddress, escrowAddress, paymentVaultAddress, this._programId)];
                     case 2:
                         ix = _b.sent();
+                        console.log("claim transaction instruction: ", ix);
                         tx = new web3_js_1.Transaction().add(__assign({}, ix));
                         return [4 /*yield*/, this._connection.getRecentBlockhash()];
                     case 3:
@@ -172,10 +175,12 @@ var Payment = /** @class */ (function () {
                     case 4:
                         _b.trys.push([4, 6, , 7]);
                         tx.recentBlockhash = recentHash.blockhash;
-                        tx.feePayer = new web3_js_1.PublicKey(sender);
+                        tx.feePayer = new web3_js_1.PublicKey(source);
+                        console.log("transacion with properties: ", tx);
                         return [4 /*yield*/, this._signAndConfirm(tx)];
                     case 5:
                         res = _b.sent();
+                        console.log("response from SignAndConfirm", res);
                         return [2 /*return*/, {
                                 status: "success",
                                 message: "transaction success",

@@ -107,10 +107,12 @@ export class Payment {
         console.log("data to claim payment: ", data);
 
         const senderAddress = new PublicKey(sender);
-        const escrowAddress = new PublicKey(escrow)
-        const paymentSourceAddress = new PublicKey(source)
+        const escrowAddress = new PublicKey(escrow);
+        const paymentSourceAddress = new PublicKey(source);
 
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
+
+        console.log("payment vault address: ", paymentVaultAddress.toBase58());
 
         const ix = await claimPayment (
             paymentSourceAddress,
@@ -120,15 +122,21 @@ export class Payment {
             this._programId
         )
 
+        console.log("claim transaction instruction: ", ix);
+
         let tx = new Transaction().add({...ix});
 
         const recentHash = await this._connection.getRecentBlockhash();
 
         try {
             tx.recentBlockhash = recentHash.blockhash;
-            tx.feePayer = new PublicKey(sender);
+            tx.feePayer = new PublicKey(source);
+
+            console.log("transacion with properties: ", tx);
     
             const res = await this._signAndConfirm(tx);
+
+            console.log("response from SignAndConfirm", res);
     
             return {
                 status: "success",
