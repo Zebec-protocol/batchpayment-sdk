@@ -1,8 +1,8 @@
 import { Commitment, Connection, ConnectionConfig, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { BATCH_PAYMENT_PROGRAM_ID, PREFIX } from "./constants";
-import { BatchPayment, ClaimPayment} from './types';
-import { initBatchPayment, claimPayment } from './instructions';
-
+import { BatchPayment, ClaimPayment, DepositVault } from './types';
+import { initBatchPayment, claimPayment, depositVault } from './instructions';
+import { Buffer } from 'buffer';
 
 export class Payment {
     protected _connection: Connection;
@@ -40,6 +40,7 @@ export class Payment {
     async init(data: BatchPayment): Promise<any> {
         const {sender, receivers, amounts} = data;
         console.log("init batch payment data: ", data);
+
         const senderAddress = new PublicKey(sender);
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
 
@@ -55,8 +56,6 @@ export class Payment {
             }
         })
 
-        console.log("receiver keys mapping: ", receiverKeys)
-
         const ix = await initBatchPayment(
             senderAddress,
             paymentVaultAddress,
@@ -65,8 +64,6 @@ export class Payment {
             amounts,
             this._programId
         )
-
-        console.log("transaction ix: ", ix);
 
         let tx = new Transaction().add(ix);
 
@@ -77,12 +74,8 @@ export class Payment {
             tx.recentBlockhash = recentHash.blockhash;
             tx.feePayer = this.walletProvider.publicKey;
             tx.partialSign(escrow);
-            
-            console.log("transaction ix after adding properties: ", tx);
     
             const res = await this._signAndConfirm(tx);
-
-            console.log("response from sign and confirm: ", res);
     
             return {
                 status: "success",
@@ -101,6 +94,52 @@ export class Payment {
         }
     }
 
+    async deposit(data: DepositVault): Promise<any> {
+        const { sender, vaultInitiator, amount} = data;
+
+        console.log("data to deposit: ", data);
+
+        const senderAddress = new PublicKey(sender);
+
+        const vaultInitiatorAddress = new PublicKey(vaultInitiator);
+
+        const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(vaultInitiatorAddress);
+
+        const ix = await depositVault(
+            senderAddress,
+            vaultInitiatorAddress,
+            paymentVaultAddress,
+            amount,
+            this._programId
+        )
+
+        let tx = new Transaction().add({...ix});
+
+        const recentHash = await this._connection.getRecentBlockhash();
+
+        try {
+            tx.recentBlockhash = recentHash.blockhash;
+            tx.feePayer = new PublicKey(sender);
+    
+            const res = await this._signAndConfirm(tx);
+    
+            return {
+                status: "success",
+                message: "deposit successful",
+                data: {
+                    ...res
+                }
+            }
+        } catch(e) {
+            return {
+                status: "error",
+                message: e,
+                data: null
+            }
+        }
+
+    }
+
     async claim(data: ClaimPayment): Promise<any> {
         const { sender, source, escrow } = data;
 
@@ -112,8 +151,6 @@ export class Payment {
 
         const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
 
-        console.log("payment vault address: ", paymentVaultAddress.toBase58());
-
         const ix = await claimPayment (
             paymentSourceAddress,
             senderAddress,
@@ -122,8 +159,6 @@ export class Payment {
             this._programId
         )
 
-        console.log("claim transaction instruction: ", ix);
-
         let tx = new Transaction().add({...ix});
 
         const recentHash = await this._connection.getRecentBlockhash();
@@ -131,16 +166,12 @@ export class Payment {
         try {
             tx.recentBlockhash = recentHash.blockhash;
             tx.feePayer = new PublicKey(source);
-
-            console.log("transacion with properties: ", tx);
     
             const res = await this._signAndConfirm(tx);
-
-            console.log("response from SignAndConfirm", res);
     
             return {
                 status: "success",
-                message: "transaction success",
+                message: "claim success",
                 data: {
                     ...res
                 }

@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ClaimPaymentSchema = exports.InitBatchPaymentSchema = exports.ClaimPayment = exports.InitBatchPayment = exports.Amount = void 0;
+exports.DepositSchema = exports.ClaimPaymentSchema = exports.InitBatchPaymentSchema = exports.Deposit = exports.ClaimPayment = exports.InitBatchPayment = exports.Amount = void 0;
 // base
 var Payment = /** @class */ (function () {
     function Payment(args) {
@@ -51,6 +51,14 @@ var ClaimPayment = /** @class */ (function (_super) {
     return ClaimPayment;
 }(Payment));
 exports.ClaimPayment = ClaimPayment;
+var Deposit = /** @class */ (function (_super) {
+    __extends(Deposit, _super);
+    function Deposit() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Deposit;
+}(Payment));
+exports.Deposit = Deposit;
 // schema
 exports.InitBatchPaymentSchema = new Map([
     [
@@ -80,6 +88,18 @@ exports.ClaimPaymentSchema = new Map([
             kind: "struct",
             fields: [
                 ["instruction", "u8"]
+            ]
+        }
+    ]
+]);
+exports.DepositSchema = new Map([
+    [
+        Deposit,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["amount", "u64"]
             ]
         }
     ]
