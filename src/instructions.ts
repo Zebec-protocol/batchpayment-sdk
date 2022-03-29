@@ -1,6 +1,6 @@
-import { AccountMeta, Keypair, PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
+import { AccountMeta, Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
 import { serialize } from "borsh";
-import { InitBatchPaymentSchema,  InitBatchPayment, ClaimPaymentSchema, ClaimPayment, Amount } from "./schema"
+import { InitBatchPaymentSchema,  InitBatchPayment, ClaimPaymentSchema, ClaimPayment, Amount,DepositSchema,Deposit } from "./schema"
 
 export const initBatchPayment = async (
     sender: PublicKey,
@@ -41,6 +41,39 @@ export const initBatchPayment = async (
         programId,
         data: Buffer.from(
             serialize(InitBatchPaymentSchema, new InitBatchPayment({...ixData}))
+        )
+    })
+}
+
+export const depositVault = async (
+    sender: PublicKey,
+    vaultinitiator:PublicKey,
+    paymentVaultAddress: PublicKey,
+    amounts: number,
+    programId: PublicKey,
+): Promise<TransactionInstruction> => {
+
+    
+
+    const keys = [
+        { pubkey: new PublicKey(sender), isSigner: true, isWritable: true },
+        { pubkey: new PublicKey(vaultinitiator), isSigner: true, isWritable: true },
+        { pubkey: new PublicKey(SystemProgram.programId), isSigner: false, isWritable: false },
+        { pubkey: new PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
+    ]
+
+    
+
+    const ixData = {
+        instruction: 2,
+        amount: (amounts*LAMPORTS_PER_SOL).toString(),
+    }
+    
+    return new TransactionInstruction({
+        keys,
+        programId,
+        data: Buffer.from(
+            serialize(DepositSchema, new Deposit({...ixData}))
         )
     })
 }

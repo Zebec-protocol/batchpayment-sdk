@@ -9,3 +9,10 @@ export interface ClaimPayment {
     source: string;
     escrow: string;
 }
+
+
+export interface DepositVault {
+    sender: string;
+    vaultinitiator: string;
+    amount: number;
+}

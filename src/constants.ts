@@ -1,2 +1,2 @@
-export const BATCH_PAYMENT_PROGRAM_ID = "DYpCiFAUuUm56CSduapHMdKGjP2KRaaSdX2WcFhsGqFd"
-export const PREFIX = "batch"
+export const BATCH_PAYMENT_PROGRAM_ID = "HQC8Ug9qbmKwbb5L5tcVMwXC3unUonSnMBg9PgfcToDu"
+export const PREFIX = "batchv2"

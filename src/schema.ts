@@ -11,6 +11,7 @@ class Payment {
 export class Amount extends Payment {}
 export class InitBatchPayment extends Payment {}
 export class ClaimPayment extends Payment {}
+export class Deposit extends Payment {}
 
 // schema
 export const InitBatchPaymentSchema = new Map([
@@ -42,6 +43,19 @@ export const ClaimPaymentSchema = new Map([
             kind: "struct",
             fields: [
                 ["instruction", "u8"]
+            ]
+        }
+    ]
+])
+
+export const DepositSchema = new Map([
+    [
+        Deposit,
+        {
+            kind: "struct",
+            fields: [
+                ["instruction", "u8"],
+                ["amount",'u64']
             ]
         }
     ]

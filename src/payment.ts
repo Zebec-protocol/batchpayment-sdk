@@ -1,7 +1,7 @@
 import { Commitment, Connection, ConnectionConfig, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { BATCH_PAYMENT_PROGRAM_ID, PREFIX } from "./constants";
-import { BatchPayment, ClaimPayment} from './types';
-import { initBatchPayment, claimPayment } from './instructions';
+import { BatchPayment, ClaimPayment,DepositVault} from './types';
+import { initBatchPayment, claimPayment , depositVault } from './instructions';
 
 
 export class Payment {
@@ -99,6 +99,60 @@ export class Payment {
                 data: null
             }
         }
+    }
+
+    async deposit(data: DepositVault): Promise<any> {
+        const { sender,vaultinitiator,amount} = data;
+
+        console.log("data to claim payment: ", data);
+
+        const senderAddress = new PublicKey(sender);
+
+        const vaultinitiatorpubkey = new PublicKey(vaultinitiator);
+
+        const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(vaultinitiatorpubkey);
+
+        console.log("payment vault address: ", paymentVaultAddress.toBase58());
+
+        const ix = await depositVault (
+            senderAddress,
+            vaultinitiatorpubkey,
+            paymentVaultAddress,
+            amount,
+            this._programId
+        )
+
+        console.log("claim transaction instruction: ", ix);
+
+        let tx = new Transaction().add({...ix});
+
+        const recentHash = await this._connection.getRecentBlockhash();
+
+        try {
+            tx.recentBlockhash = recentHash.blockhash;
+            tx.feePayer = new PublicKey(sender);
+
+            console.log("transacion with properties: ", tx);
+    
+            const res = await this._signAndConfirm(tx);
+
+            console.log("response from SignAndConfirm", res);
+    
+            return {
+                status: "success",
+                message: "transaction success",
+                data: {
+                    ...res
+                }
+            }
+        } catch(e) {
+            return {
+                status: "error",
+                message: e,
+                data: null
+            }
+        }
+
     }
 
     async claim(data: ClaimPayment): Promise<any> {
