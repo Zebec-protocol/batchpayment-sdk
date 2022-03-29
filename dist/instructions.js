@@ -56,7 +56,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.claimPayment = exports.depositVault = exports.initBatchPayment = void 0;
+exports.depositVault = exports.claimPayment = exports.initBatchPayment = void 0;
 var web3_js_1 = require("@solana/web3.js");
 var borsh_1 = require("borsh");
 var schema_1 = require("./schema");
@@ -89,27 +89,6 @@ var initBatchPayment = function (sender, paymentVaultAddress, escrow, receiverKe
     });
 }); };
 exports.initBatchPayment = initBatchPayment;
-var depositVault = function (sender, vaultinitiator, paymentVaultAddress, amounts, programId) { return __awaiter(void 0, void 0, void 0, function () {
-    var keys, ixData;
-    return __generator(this, function (_a) {
-        keys = [
-            { pubkey: new web3_js_1.PublicKey(sender), isSigner: true, isWritable: true },
-            { pubkey: new web3_js_1.PublicKey(vaultinitiator), isSigner: true, isWritable: true },
-            { pubkey: new web3_js_1.PublicKey(web3_js_1.SystemProgram.programId), isSigner: false, isWritable: false },
-            { pubkey: new web3_js_1.PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
-        ];
-        ixData = {
-            instruction: 2,
-            amount: (amounts * web3_js_1.LAMPORTS_PER_SOL).toString(),
-        };
-        return [2 /*return*/, new web3_js_1.TransactionInstruction({
-                keys: keys,
-                programId: programId,
-                data: Buffer.from((0, borsh_1.serialize)(schema_1.DepositSchema, new schema_1.Deposit(__assign({}, ixData))))
-            })];
-    });
-}); };
-exports.depositVault = depositVault;
 var claimPayment = function (paymentSource, sender, escrow, paymentVaultAddress, programId) { return __awaiter(void 0, void 0, void 0, function () {
     var keys, ixData;
     return __generator(this, function (_a) {
@@ -131,3 +110,24 @@ var claimPayment = function (paymentSource, sender, escrow, paymentVaultAddress,
     });
 }); };
 exports.claimPayment = claimPayment;
+var depositVault = function (sender, vaultInitiatorAddress, paymentVaultAddress, amounts, programId) { return __awaiter(void 0, void 0, void 0, function () {
+    var keys, ixData;
+    return __generator(this, function (_a) {
+        keys = [
+            { pubkey: sender, isSigner: true, isWritable: true },
+            { pubkey: vaultInitiatorAddress, isSigner: true, isWritable: true },
+            { pubkey: web3_js_1.SystemProgram.programId, isSigner: false, isWritable: false },
+            { pubkey: paymentVaultAddress, isSigner: false, isWritable: true },
+        ];
+        ixData = {
+            instruction: 2,
+            amount: (amounts * web3_js_1.LAMPORTS_PER_SOL).toString(),
+        };
+        return [2 /*return*/, new web3_js_1.TransactionInstruction({
+                keys: keys,
+                programId: programId,
+                data: Buffer.from((0, borsh_1.serialize)(schema_1.DepositSchema, new schema_1.Deposit(__assign({}, ixData))))
+            })];
+    });
+}); };
+exports.depositVault = depositVault;
