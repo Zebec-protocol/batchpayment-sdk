@@ -45,39 +45,6 @@ export const initBatchPayment = async (
     })
 }
 
-export const depositVault = async (
-    sender: PublicKey,
-    vaultinitiator:PublicKey,
-    paymentVaultAddress: PublicKey,
-    amounts: number,
-    programId: PublicKey,
-): Promise<TransactionInstruction> => {
-
-    
-
-    const keys = [
-        { pubkey: new PublicKey(sender), isSigner: true, isWritable: true },
-        { pubkey: new PublicKey(vaultinitiator), isSigner: true, isWritable: true },
-        { pubkey: new PublicKey(SystemProgram.programId), isSigner: false, isWritable: false },
-        { pubkey: new PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
-    ]
-
-    
-
-    const ixData = {
-        instruction: 2,
-        amount: (amounts*LAMPORTS_PER_SOL).toString(),
-    }
-    
-    return new TransactionInstruction({
-        keys,
-        programId,
-        data: Buffer.from(
-            serialize(DepositSchema, new Deposit({...ixData}))
-        )
-    })
-}
-
 export const claimPayment = async (
     paymentSource: PublicKey,
     sender: PublicKey,
@@ -103,6 +70,35 @@ export const claimPayment = async (
         programId,
         data: Buffer.from(
             serialize(ClaimPaymentSchema, new ClaimPayment({...ixData}))
+        )
+    })
+}
+
+export const depositVault = async (
+    sender: PublicKey,
+    vaultInitiatorAddress:PublicKey,
+    paymentVaultAddress: PublicKey,
+    amounts: number,
+    programId: PublicKey,
+): Promise<TransactionInstruction> => {
+
+    const keys = [
+        { pubkey: sender, isSigner: true, isWritable: true },
+        { pubkey: vaultInitiatorAddress, isSigner: true, isWritable: true },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: paymentVaultAddress, isSigner: false, isWritable: true },
+    ]
+
+    const ixData = {
+        instruction: 2,
+        amount: (amounts*LAMPORTS_PER_SOL).toString(),
+    }
+    
+    return new TransactionInstruction({
+        keys,
+        programId,
+        data: Buffer.from(
+            serialize(DepositSchema, new Deposit({...ixData}))
         )
     })
 }

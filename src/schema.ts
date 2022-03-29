@@ -55,7 +55,7 @@ export const DepositSchema = new Map([
             kind: "struct",
             fields: [
                 ["instruction", "u8"],
-                ["amount",'u64']
+                ["amount", "u64"]
             ]
         }
     ]

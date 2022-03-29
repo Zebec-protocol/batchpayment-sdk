@@ -1,18 +1,18 @@
-export interface BatchPayment {
+export type BatchPayment =  {
     sender: string;
     amounts: number[];
     receivers: string[];
 }
 
-export interface ClaimPayment {
+export type ClaimPayment =  {
     sender: string;
     source: string;
     escrow: string;
 }
 
 
-export interface DepositVault {
+export type DepositVault =  {
     sender: string;
-    vaultinitiator: string;
+    vaultInitiator: string;
     amount: number;
 }
