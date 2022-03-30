@@ -49,16 +49,17 @@ export const claimPayment = async (
     paymentSource: PublicKey,
     sender: PublicKey,
     escrow: PublicKey,
-    paymentVaultAddress: PublicKey,
+    paymentVaultAddress: string,
     programId: PublicKey
 ): Promise<TransactionInstruction> => {
 
     const keys = [
-        { pubkey: paymentSource, isSigner: true, isWritable: true },
+        { pubkey: paymentSource, isSigner: false, isWritable: true },
         { pubkey: sender, isSigner: false, isWritable: true },
         { pubkey: escrow, isSigner: false, isWritable: true },
-        { pubkey: paymentVaultAddress, isSigner: false, isWritable: true },
-        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
+        { pubkey: new PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: paymentSource, isSigner: true, isWritable: true },
     ]
 
     const ixData = {
@@ -77,7 +78,7 @@ export const claimPayment = async (
 export const depositVault = async (
     sender: PublicKey,
     vaultInitiatorAddress:PublicKey,
-    paymentVaultAddress: PublicKey,
+    paymentVaultAddress: string,
     amounts: number,
     programId: PublicKey,
 ): Promise<TransactionInstruction> => {
@@ -86,7 +87,7 @@ export const depositVault = async (
         { pubkey: sender, isSigner: true, isWritable: true },
         { pubkey: vaultInitiatorAddress, isSigner: true, isWritable: true },
         { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-        { pubkey: paymentVaultAddress, isSigner: false, isWritable: true },
+        { pubkey: new PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
     ]
 
     const ixData = {

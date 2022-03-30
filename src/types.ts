@@ -7,6 +7,7 @@ export type BatchPayment =  {
 export type ClaimPayment =  {
     sender: string;
     source: string;
+    paymentVaultAddress:string;
     escrow: string;
 }
 
@@ -14,5 +15,6 @@ export type ClaimPayment =  {
 export type DepositVault =  {
     sender: string;
     vaultInitiator: string;
+    paymentVaultAddress:string;
     amount: number;
 }

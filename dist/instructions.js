@@ -93,11 +93,12 @@ var claimPayment = function (paymentSource, sender, escrow, paymentVaultAddress,
     var keys, ixData;
     return __generator(this, function (_a) {
         keys = [
-            { pubkey: paymentSource, isSigner: true, isWritable: true },
+            { pubkey: paymentSource, isSigner: false, isWritable: true },
             { pubkey: sender, isSigner: false, isWritable: true },
             { pubkey: escrow, isSigner: false, isWritable: true },
-            { pubkey: paymentVaultAddress, isSigner: false, isWritable: true },
-            { pubkey: web3_js_1.SystemProgram.programId, isSigner: false, isWritable: false }
+            { pubkey: new web3_js_1.PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
+            { pubkey: web3_js_1.SystemProgram.programId, isSigner: false, isWritable: false },
+            { pubkey: paymentSource, isSigner: true, isWritable: true },
         ];
         ixData = {
             instruction: 1
@@ -117,7 +118,7 @@ var depositVault = function (sender, vaultInitiatorAddress, paymentVaultAddress,
             { pubkey: sender, isSigner: true, isWritable: true },
             { pubkey: vaultInitiatorAddress, isSigner: true, isWritable: true },
             { pubkey: web3_js_1.SystemProgram.programId, isSigner: false, isWritable: false },
-            { pubkey: paymentVaultAddress, isSigner: false, isWritable: true },
+            { pubkey: new web3_js_1.PublicKey(paymentVaultAddress), isSigner: false, isWritable: true },
         ];
         ixData = {
             instruction: 2,

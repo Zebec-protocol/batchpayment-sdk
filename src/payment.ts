@@ -1,5 +1,5 @@
 import { Commitment, Connection, ConnectionConfig, Keypair, PublicKey, Transaction } from "@solana/web3.js";
-import { BATCH_PAYMENT_PROGRAM_ID, PREFIX } from "./constants";
+import { BATCH_PAYMENT_PROGRAM_ID, PREFIX, RANDOM } from "./constants";
 import { BatchPayment, ClaimPayment, DepositVault } from './types';
 import { initBatchPayment, claimPayment, depositVault } from './instructions';
 import { Buffer } from 'buffer';
@@ -22,7 +22,7 @@ export class Payment {
 
     protected async _findPaymentVaultAddress(_sender: PublicKey): Promise<[PublicKey, number]> {
         return await PublicKey.findProgramAddress(
-            [_sender.toBuffer(), Buffer.from(PREFIX)],
+            [_sender.toBuffer(),RANDOM.toBuffer(),Buffer.from(PREFIX)],
             this._programId
         )
     }
@@ -82,6 +82,7 @@ export class Payment {
                 message: "transaction success",
                 data: {
                     pda: escrow.publicKey.toBase58(), 
+                    paymentVaultAddress:paymentVaultAddress,
                     ...res
                 }
             }
@@ -95,15 +96,13 @@ export class Payment {
     }
 
     async deposit(data: DepositVault): Promise<any> {
-        const { sender, vaultInitiator, amount} = data;
+        const { sender, vaultInitiator,paymentVaultAddress,amount} = data;
 
         console.log("data to deposit: ", data);
 
         const senderAddress = new PublicKey(sender);
 
         const vaultInitiatorAddress = new PublicKey(vaultInitiator);
-
-        const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(vaultInitiatorAddress);
 
         const ix = await depositVault(
             senderAddress,
@@ -141,15 +140,13 @@ export class Payment {
     }
 
     async claim(data: ClaimPayment): Promise<any> {
-        const { sender, source, escrow } = data;
+        const { sender, source,paymentVaultAddress,escrow } = data;
 
         console.log("data to claim payment: ", data);
 
         const senderAddress = new PublicKey(sender);
         const escrowAddress = new PublicKey(escrow);
         const paymentSourceAddress = new PublicKey(source);
-
-        const [paymentVaultAddress, _] = await this._findPaymentVaultAddress(senderAddress);
 
         const ix = await claimPayment (
             paymentSourceAddress,

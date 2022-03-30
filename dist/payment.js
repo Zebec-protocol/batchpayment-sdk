@@ -63,7 +63,7 @@ var Payment = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, web3_js_1.PublicKey.findProgramAddress([_sender.toBuffer(), buffer_1.Buffer.from(constants_1.PREFIX)], this._programId)];
+                    case 0: return [4 /*yield*/, web3_js_1.PublicKey.findProgramAddress([_sender.toBuffer(), constants_1.RANDOM.toBuffer(), buffer_1.Buffer.from(constants_1.PREFIX)], this._programId)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -131,7 +131,7 @@ var Payment = /** @class */ (function () {
                         return [2 /*return*/, {
                                 status: "success",
                                 message: "transaction success",
-                                data: __assign({ pda: escrow.publicKey.toBase58() }, res)
+                                data: __assign({ pda: escrow.publicKey.toBase58(), paymentVaultAddress: paymentVaultAddress }, res)
                             }];
                     case 6:
                         e_1 = _b.sent();
@@ -147,91 +147,85 @@ var Payment = /** @class */ (function () {
     };
     Payment.prototype.deposit = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var sender, vaultInitiator, amount, senderAddress, vaultInitiatorAddress, _a, paymentVaultAddress, _, ix, tx, recentHash, res, e_2;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var sender, vaultInitiator, paymentVaultAddress, amount, senderAddress, vaultInitiatorAddress, ix, tx, recentHash, res, e_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        sender = data.sender, vaultInitiator = data.vaultInitiator, amount = data.amount;
+                        sender = data.sender, vaultInitiator = data.vaultInitiator, paymentVaultAddress = data.paymentVaultAddress, amount = data.amount;
                         console.log("data to deposit: ", data);
                         senderAddress = new web3_js_1.PublicKey(sender);
                         vaultInitiatorAddress = new web3_js_1.PublicKey(vaultInitiator);
-                        return [4 /*yield*/, this._findPaymentVaultAddress(vaultInitiatorAddress)];
-                    case 1:
-                        _a = _b.sent(), paymentVaultAddress = _a[0], _ = _a[1];
                         return [4 /*yield*/, (0, instructions_1.depositVault)(senderAddress, vaultInitiatorAddress, paymentVaultAddress, amount, this._programId)];
-                    case 2:
-                        ix = _b.sent();
+                    case 1:
+                        ix = _a.sent();
                         tx = new web3_js_1.Transaction().add(__assign({}, ix));
                         return [4 /*yield*/, this._connection.getRecentBlockhash()];
+                    case 2:
+                        recentHash = _a.sent();
+                        _a.label = 3;
                     case 3:
-                        recentHash = _b.sent();
-                        _b.label = 4;
-                    case 4:
-                        _b.trys.push([4, 6, , 7]);
+                        _a.trys.push([3, 5, , 6]);
                         tx.recentBlockhash = recentHash.blockhash;
                         tx.feePayer = new web3_js_1.PublicKey(sender);
                         return [4 /*yield*/, this._signAndConfirm(tx)];
-                    case 5:
-                        res = _b.sent();
+                    case 4:
+                        res = _a.sent();
                         return [2 /*return*/, {
                                 status: "success",
                                 message: "deposit successful",
                                 data: __assign({}, res)
                             }];
-                    case 6:
-                        e_2 = _b.sent();
+                    case 5:
+                        e_2 = _a.sent();
                         return [2 /*return*/, {
                                 status: "error",
                                 message: e_2,
                                 data: null
                             }];
-                    case 7: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
     };
     Payment.prototype.claim = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var sender, source, escrow, senderAddress, escrowAddress, paymentSourceAddress, _a, paymentVaultAddress, _, ix, tx, recentHash, res, e_3;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var sender, source, paymentVaultAddress, escrow, senderAddress, escrowAddress, paymentSourceAddress, ix, tx, recentHash, res, e_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        sender = data.sender, source = data.source, escrow = data.escrow;
+                        sender = data.sender, source = data.source, paymentVaultAddress = data.paymentVaultAddress, escrow = data.escrow;
                         console.log("data to claim payment: ", data);
                         senderAddress = new web3_js_1.PublicKey(sender);
                         escrowAddress = new web3_js_1.PublicKey(escrow);
                         paymentSourceAddress = new web3_js_1.PublicKey(source);
-                        return [4 /*yield*/, this._findPaymentVaultAddress(senderAddress)];
-                    case 1:
-                        _a = _b.sent(), paymentVaultAddress = _a[0], _ = _a[1];
                         return [4 /*yield*/, (0, instructions_1.claimPayment)(paymentSourceAddress, senderAddress, escrowAddress, paymentVaultAddress, this._programId)];
-                    case 2:
-                        ix = _b.sent();
+                    case 1:
+                        ix = _a.sent();
                         tx = new web3_js_1.Transaction().add(__assign({}, ix));
                         return [4 /*yield*/, this._connection.getRecentBlockhash()];
+                    case 2:
+                        recentHash = _a.sent();
+                        _a.label = 3;
                     case 3:
-                        recentHash = _b.sent();
-                        _b.label = 4;
-                    case 4:
-                        _b.trys.push([4, 6, , 7]);
+                        _a.trys.push([3, 5, , 6]);
                         tx.recentBlockhash = recentHash.blockhash;
                         tx.feePayer = new web3_js_1.PublicKey(source);
                         return [4 /*yield*/, this._signAndConfirm(tx)];
-                    case 5:
-                        res = _b.sent();
+                    case 4:
+                        res = _a.sent();
                         return [2 /*return*/, {
                                 status: "success",
                                 message: "claim success",
                                 data: __assign({}, res)
                             }];
-                    case 6:
-                        e_3 = _b.sent();
+                    case 5:
+                        e_3 = _a.sent();
                         return [2 /*return*/, {
                                 status: "error",
                                 message: e_3,
                                 data: null
                             }];
-                    case 7: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
