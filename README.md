@@ -15,7 +15,7 @@ const response = await payment.init(
     }
 )
 
-// need to add save returned escrow
+// need to save returned escrow
 ```
 
 ### Deposit
